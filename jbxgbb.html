@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BluePeak Lending Group</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(to right, #0a1f44, #1f4e79);
+      color: white;
+      text-align: center;
+    }
+    form {
+      background: white;
+      color: black;
+      padding: 25px;
+      border-radius: 10px;
+      width: 350px;
+      margin: auto;
+    }
+    input, select, button {
+      width: 95%;
+      padding: 10px;
+      margin: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #1f4e79;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>BluePeak Lending Group</h1>
+<p>Fast • Secure • Trusted Loans in Alabama & California</p>
+
+<form id="loanForm">
+  <input type="text" placeholder="Full Name" required id="name">
+  <input type="email" placeholder="Email" required id="email">
+  <input type="tel" placeholder="Phone Number" required id="phone">
+  <input type="text" placeholder="SSN (Last 4 digits)" required id="ssn">
+
+  <input type="text" placeholder="Address" required id="address">
+
+  <select id="state">
+    <option>Alabama</option>
+    <option>California</option>
+  </select>
+
+  <input type="number" placeholder="Loan Amount ($)" required id="amount">
+  <input type="text" placeholder="Employment Status" required id="job">
+  <input type="number" placeholder="Monthly Income ($)" required id="income">
+
+  <button type="submit">Apply Now</button>
+</form>
+
+<p id="msg"></p>
+
+<script>
+document.getElementById("loanForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const data = {
+    name: name.value,
+    email: email.value,
+    phone: phone.value,
+    ssn: ssn.value,
+    address: address.value,
+    state: state.value,
+    amount: amount.value,
+    job: job.value,
+    income: income.value
+  };
+
+  const res = await fetch("/apply", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(data)
+  });
+
+  const result = await res.json();
+  msg.innerText = result.message;
+});
+
+const express = require("express");
+const app = express();
+
+app.use(express.json());
+
+let applications = [];
+
+app.post("/apply", (req, res) => {
+  const data = req.body;
+
+  applications.push({
+    ...data,
+    date: new Date()
+  });
+
+  res.json({ message: "Application received. We will contact you shortly." });
+});
+
+app.get("/admin", (req, res) => {
+  res.json(applications);
+});
+
+app.listen(3000, () => console.log("Server running"));
+</script>
+
+</body>
+</html>
